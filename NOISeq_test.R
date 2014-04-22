@@ -62,13 +62,15 @@ myTMMdata <- readData(data=myTMM, factors=myfactors, biotype=mybiotypes,)
 myTMMdata
 # low count filter is not neccessary
 
-#noiseq-sim needs raw normalized data
+#noiseq-sim needs raw data
 myresults <- noiseq(mydata, 
                     factor = "Tissue", 
                     k = NULL, norm = "n", 
                     pnr = 0.2, nss = 5, 
                     v = 0.02, lc = 1, 
                     replicates = "no")
+
+# noiseq sim TMM normalized data
 
 myresults_TMM <- noiseq(myTMMdata, 
                     factor = "Tissue", 
@@ -82,8 +84,12 @@ myresults_TMM <- noiseq(myTMMdata,
 
 head(myresults_TMM@results[[1]])
 
+# plots plots plots
+
 DE.plot(myresults, q = 0.8, graphic = "expr", log.scale = TRUE)
 DE.plot(myresults_TMM, q = 0.7, graphic = "expr", log.scale = TRUE)
+
+DE.plot(myresults_TMM, q = 0.7, graphic = "MD", log.scale = TRUE)
 
 DE.plot(myresults_TMM, chromosomes = NULL, q = 0.5, graphic = "distr")
 
