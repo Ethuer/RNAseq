@@ -35,7 +35,7 @@ mybiotypes <-  read.table("~/RNAseq_project//comparisons/genebased_human_NOISeq/
 
 head(mybiotypes)
 
-mysamples <-  read.table("~/RNAseq_project//comparisons/genebased_human_NOISeq/CBS6318_genes.txt", 
+mysamples <-  read.table("~/RNAseq_project//comparisons/genebased_human_NOISeq/CBS6318_genes_lt.txt", 
                   sep="\t", 
                   #col.names=c("id", "name"), 
                   header = TRUE,
@@ -58,17 +58,19 @@ mydata
 
 # normalisation via trimmed mean of M 
 myTMM = tmm(assayData(mydata)$exprs, long = 1000, lc = 0)
+head(myTMM)
 myTMMdata <- readData(data=myTMM, factors=myfactors, biotype=mybiotypes,)
 myTMMdata
 # low count filter is not neccessary
 
 #noiseq-sim needs raw data
-myresults <- noiseq(mydata, 
-                    factor = "Tissue", 
-                    k = NULL, norm = "n", 
-                    pnr = 0.2, nss = 5, 
-                    v = 0.02, lc = 1, 
-                    replicates = "no")
+
+#myresults <- noiseq(mydata, 
+#                    factor = "Tissue", 
+#                    k = NULL, norm = "n", 
+#                    pnr = 0.2, nss = 5, 
+#                    v = 0.02, lc = 1, 
+#                    replicates = "no")
 
 # noiseq sim TMM normalized data
 
@@ -87,11 +89,41 @@ head(myresults_TMM@results[[1]])
 # plots plots plots
 
 DE.plot(myresults, q = 0.8, graphic = "expr", log.scale = TRUE)
-DE.plot(myresults_TMM, q = 0.7, graphic = "expr", log.scale = TRUE)
+DE.plot(myresults_TMM, q = 0.8, graphic = "expr", log.scale = TRUE)
 
-DE.plot(myresults_TMM, q = 0.7, graphic = "MD", log.scale = TRUE)
+DE.plot(myresults_TMM, q = 0.8, graphic = "MD", log.scale = TRUE)
 
-DE.plot(myresults_TMM, chromosomes = NULL, q = 0.5, graphic = "distr")
+DE.plot(myresults_TMM, chromosomes = NULL, q = 0.8, graphic = "distr")
 
-write.csv(myresults_TMM@results[[1]],file="~/RNAseq_project/comparisons/genebased_human_NOISeq/CBS6318_DE.txt")
+write.csv(myresults_TMM@results[[1]],file="~/RNAseq_project/comparisons/genebased_human_NOISeq/CBS6318_lt_DE.txt")
+
+
+mynoiseq.deg = degenes(myresults_TMM, q = 0.8, M = NULL)
+#[1] "1614 differentially expressed features"
+mynoiseq.deg1 = degenes(myresults_TMM, q = 0.8, M = "up")
+#[1] "1289 differentially expressed features (up in first condition)"
+mynoiseq.deg2 = degenes(myresults_TMM, q = 0.8, M = "down")
+#[1] "325 differentially expressed features (down in first condition)"
+
+write.csv(mynoiseq.deg1,file="~/RNAseq_project/comparisons/genebased_human_NOISeq/CBS6318_st_DE.upregulated.probab0.8.txt")
+write.csv(mynoiseq.deg2,file="~/RNAseq_project/comparisons/genebased_human_NOISeq/CBS6318_st_DE.downregulated.probab0.8.txt")
+
+
+# additional comments to read the output:  copied from the vignette
+#
+# p value
+# prob gives the estimated probability of differential expression for each
+# feature. Note that when using NOISeq, these probabilities are not equivalent to p-values. The higher the
+# probability, the more likely that the difference in expression is due to the change in the experimental condition
+# and not to chance.
+#
+# M score
+# With the argument M we choose if we
+# want all the differentially expressed features, only the differentially expressed features that are more expressed in
+# condition 1 than in condition 2 (M = “up”) or only the differentially expressed features that are under-expressed
+# in condition 1 with regard to condition 2 (M = “down”):
+# 
+# q value
+# We recommend for q to use values around 0.8. If NOISeq-sim has been used because no replicates
+# are available, then it is preferable to use a higher threshold such as q = 0.9.
 
