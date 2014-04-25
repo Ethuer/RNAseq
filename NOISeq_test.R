@@ -35,7 +35,10 @@ mybiotypes <-  read.table("~/RNAseq_project//comparisons/genebased_human_NOISeq/
 
 head(mybiotypes)
 
-mysamples <-  read.table("~/RNAseq_project//comparisons/genebased_human_NOISeq/CBS6318_genes_lt.txt", 
+
+# The input should be in the above mentioned scheme, using only one sample for NOISeq-sim 
+
+mysamples <-  read.table("~/RNAseq_project//comparisons/genebased_human_NOISeq/CBS6318_genes_st_one_column_single.txt", 
                   sep="\t", 
                   #col.names=c("id", "name"), 
                   header = TRUE,
@@ -84,30 +87,28 @@ myresults_TMM <- noiseq(myTMMdata,
 #The output myresults@results[[1]]$prob gives the estimated probability of differential expression for each
 #feature.
 
-head(myresults_TMM@results[[1]])
+#head(myresults_TMM@results[[1]])
 
 # plots plots plots
 
-DE.plot(myresults, q = 0.8, graphic = "expr", log.scale = TRUE)
-DE.plot(myresults_TMM, q = 0.8, graphic = "expr", log.scale = TRUE)
+#DE.plot(myresults, q = 0.8, graphic = "expr", log.scale = TRUE)
+#DE.plot(myresults_TMM, q = 0.8, graphic = "expr", log.scale = TRUE)
 
 DE.plot(myresults_TMM, q = 0.8, graphic = "MD", log.scale = TRUE)
 
-DE.plot(myresults_TMM, chromosomes = NULL, q = 0.8, graphic = "distr")
+#DE.plot(myresults_TMM, chromosomes = NULL, q = 0.8, graphic = "distr")
 
-write.csv(myresults_TMM@results[[1]],file="~/RNAseq_project/comparisons/genebased_human_NOISeq/CBS6318_lt_DE.txt")
+#write.csv(myresults_TMM@results[[1]],file="~/RNAseq_project/comparisons/genebased_human_NOISeq/CBS6318_lt_DE.txt")
 
-
+# analysis of DE genes in threshhold (q) 0.8  (see below for meaning)
 mynoiseq.deg = degenes(myresults_TMM, q = 0.8, M = NULL)
-#[1] "1614 differentially expressed features"
 mynoiseq.deg1 = degenes(myresults_TMM, q = 0.8, M = "up")
-#[1] "1289 differentially expressed features (up in first condition)"
 mynoiseq.deg2 = degenes(myresults_TMM, q = 0.8, M = "down")
-#[1] "325 differentially expressed features (down in first condition)"
 
-write.csv(mynoiseq.deg1,file="~/RNAseq_project/comparisons/genebased_human_NOISeq/CBS6318_st_DE.upregulated.probab0.8.txt")
-write.csv(mynoiseq.deg2,file="~/RNAseq_project/comparisons/genebased_human_NOISeq/CBS6318_st_DE.downregulated.probab0.8.txt")
+write.csv(mynoiseq.deg1,file="~/RNAseq_project/comparisons/genebased_human_NOISeq/CBS6318_genes_st_one_column_single.txt.up.probab0.8.txt")
+write.csv(mynoiseq.deg2,file="~/RNAseq_project/comparisons/genebased_human_NOISeq/CBS6318_genes_st_one_column_single.txt.down.probab0.8.txt")
 
+# IMPORTANT  M value defines upregulated in the first condition  in my case =t0  meaning M(up) = downregulation over delta time
 
 # additional comments to read the output:  copied from the vignette
 #
